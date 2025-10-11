@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>p20 - {{ cloud_provider }}</title>
+    <style>
+        body {
+            font-family: monospace;
+            margin: 40px;
+            background: white;
+        }
+        h1 {
+            font-size: 18px;
+            font-weight: normal;
+        }
+        .info {
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        .endpoint {
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>p20 - {{ cloud_provider }}</h1>
+
+    <div class="info">
+        Instance: {{ ansible_hostname }}<br>
+        Provider: {{ cloud_provider }}<br>
+        Region: {% if cloud_provider == 'AWS' %}ap-south-1{% elif cloud_provider == 'Azure' %}Central India{% endif %}<br>
+        Status: Active
+    </div>
+
+    <div class="endpoints">
+        <div class="endpoint">GET /health - Health check</div>
+        <div class="endpoint">GET /nginx_status - Metrics</div>
+    </div>
+</body>
+</html>

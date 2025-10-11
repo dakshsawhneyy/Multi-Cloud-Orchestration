@@ -1,0 +1,76 @@
+---
+- name: Configure Instances
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Update package cache [Ubuntu]
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Ubuntu'
+
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+    
+    - name: Create Web Directory
+      file:
+        path: /var/www/p20
+        state: directory
+        mode: '0755'
+
+    - name: Deploy Web Page
+      template:
+        # .j2 means it can dynamically inject variables like {{ cloud_provider }} or instance metadata.
+        src: ../templates/index.html.j2
+        dest: /var/www/p20/index.html
+        mode: '0644'
+
+    - name: Configure Nginx
+      copy: 
+        content: |
+          server {
+            listen 80 default_server;
+            
+            # server_name _; means “catch-all” — any domain points here. Any hostname
+            server_name _;     
+
+            root /var/www/p20;
+            index index.html;
+
+            # Handles all normal HTTP requests. Serve static files OR 404.   # try_files tries to find the file or directory for the given URI.
+            location / {
+              try_files $uri $uri/ =404
+            }
+
+            location /health {
+              default_type application/json
+              return 200 '{"status":"healthy","provider":"{{ cloud_provider }}"}';
+            }
+
+            # Exposes lightweight stats endpoint for monitoring agents.
+            location /nginx_status {
+              stub_status on;
+              access_log off;
+              allow 127.0.0.1;
+              deny all;
+            }
+          }
+        dest: "{{ '/etc/nginx/conf.d/default.conf' }}"
+      # if any change is detected, Ansible triggers a handler to restart NginX automatically
+      notify: restart nginx
+
+    - name: Ensure nginx is started
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+  handlers:
+  # Runs only when notify: is triggered.
+  - name: restart nginx
+    systemd:
+      name: nginx
+      state: restarted
