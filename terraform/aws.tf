@@ -37,7 +37,7 @@ resource "aws_security_group" "my_sg" {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["${var.my_ip_for_ssh}/32"]
+    cidr_blocks = ["${var.my_ip_for_ssh}"]
   } 
   # Rule 2: Allow HTTP traffic from anywhere on the internet
   ingress {

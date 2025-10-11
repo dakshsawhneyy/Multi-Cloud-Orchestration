@@ -12,3 +12,8 @@ output "my_sg_id" {
   description = "Output for my Security Group"
   value = aws_security_group.my_sg.id
 }
+
+output "azure_vm_public_ip" {
+  description = "The public IP address of the Azure VM"
+  value       = azurerm_public_ip.main.ip_address
+}
