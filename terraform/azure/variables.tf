@@ -3,12 +3,6 @@ variable "project_name" {
    type = string
 }
 
-variable "vpc_cidr" {
-  description = "This provides the cidr block for vpc"
-  default = "10.0.0.0/16"
-  type = string
-}
-
 variable "vn_cidr" {
   type = string
   default = "10.1.0.0/16"
@@ -17,16 +11,6 @@ variable "vn_cidr" {
 variable "azure_subnet_cidr" {
   type = string
   default = "10.1.1.0/24"
-}
-
-variable "environment" {
-  default = "dev"
-  type = string
-}
-
-variable "single_nat_gateway" {
-  default = true
-  type = bool
 }
 
 variable "my_ip_for_ssh" {
