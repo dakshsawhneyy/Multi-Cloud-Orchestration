@@ -3,6 +3,7 @@
 #######################################
 resource "azurerm_resource_group" "main" {
   name = "${var.project_name}-rg"
+  count = terraform.workspace == "azure" ? 1 : 0
   location = var.azure_location
 }
 
@@ -13,16 +14,18 @@ resource "azurerm_resource_group" "main" {
 # Virtual Network and Subnet
 resource "azurerm_virtual_network" "main" {
   name = "${var.project_name}-vn"
-  location = azurerm_resource_group.main.location
+  count = terraform.workspace == "azure" ? 1 : 0
+  location = azurerm_resource_group.main[0].location
   address_space = [var.vn_cidr]
-  resource_group_name = azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main[0].name
 }
 
 # Subnets
 resource "azurerm_subnet" "main" {
   name = "${var.project_name}-subnet"
-  virtual_network_name = azurerm_virtual_network.main.name
-  resource_group_name = azurerm_resource_group.main.name
+  count = terraform.workspace == "azure" ? 1 : 0
+  virtual_network_name = azurerm_virtual_network.main[0].name
+  resource_group_name = azurerm_resource_group.main[0].name
   address_prefixes     = [var.azure_subnet_cidr]
 }
 
@@ -31,8 +34,9 @@ resource "azurerm_subnet" "main" {
 #######################################
 resource "azurerm_network_security_group" "main" {
   name = "${var.project_name}-sg"
-  location = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  count = terraform.workspace == "azure" ? 1 : 0
+  location = azurerm_resource_group.main[0].location
+  resource_group_name = azurerm_resource_group.main[0].name
 
   security_rule {
     name = "SSH"
@@ -62,29 +66,32 @@ resource "azurerm_network_security_group" "main" {
 # Public IP 
 resource "azurerm_public_ip" "main" {
   name                = "${var.project_name}-public-ip"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  count = terraform.workspace == "azure" ? 1 : 0
+  resource_group_name = azurerm_resource_group.main[0].name
+  location            = azurerm_resource_group.main[0].location
   allocation_method   = "Static"
 }
 
 # Network Interface (NIC)   -- connects subnet with your vm
 resource "azurerm_network_interface" "main" {
   name                = "${var.project_name}-nic"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  count = terraform.workspace == "azure" ? 1 : 0
+  location            = azurerm_resource_group.main[0].location
+  resource_group_name = azurerm_resource_group.main[0].name
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = azurerm_subnet.main.id
+    subnet_id                     = azurerm_subnet.main[0].id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.main.id
+    public_ip_address_id          = azurerm_public_ip.main[0].id
   }
 }
 
 # Associate the NSG with the NIC    -- secuity gate at nsg
 resource "azurerm_network_interface_security_group_association" "main" {
-  network_interface_id      = azurerm_network_interface.main.id
-  network_security_group_id = azurerm_network_security_group.main.id
+  count = terraform.workspace == "azure" ? 1 : 0
+  network_interface_id      = azurerm_network_interface.main[0].id
+  network_security_group_id = azurerm_network_security_group.main[0].id
 }
 
 
@@ -94,10 +101,11 @@ resource "azurerm_network_interface_security_group_association" "main" {
 # The Linux Virtual Machine
 resource "azurerm_linux_virtual_machine" "main" {
   name = "${var.project_name}-vm"
-  resource_group_name = azurerm_resource_group.main.name
-  location = azurerm_resource_group.main.location
+  count = terraform.workspace == "azure" ? 1 : 0
+  resource_group_name = azurerm_resource_group.main[0].name
+  location = azurerm_resource_group.main[0].location
   size = "Standard_B1s"      # t2.micro
-  network_interface_ids = [azurerm_network_interface.main.id]
+  network_interface_ids = [azurerm_network_interface.main[0].id]
 
   # This tells Azure not to require a password and to use an SSH key instead
   disable_password_authentication = true

@@ -8,6 +8,8 @@ module "vpc" {
   name = "${var.project_name}"
   cidr = "${var.vpc_cidr}"
 
+  count = terraform.workspace == "aws" ? 1 : 0
+
   azs = local.azs
   public_subnets = local.public_subnets
   private_subnets = local.private_subnets
@@ -30,14 +32,16 @@ module "vpc" {
 resource "aws_security_group" "my_sg" {
   name = "${var.project_name}-my_sg"
   description = "Allows SSH and HTTP traffic"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = module.vpc[0].vpc_id
 
-   # Rule 1: Allow SSH traffic from your IP address
+  count = terraform.workspace == "aws" ? 1 : 0
+
+  # Rule 1: Allow SSH traffic from your IP address
   ingress {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["${var.my_ip_for_ssh}"]
+    cidr_blocks = ["0.0.0.0/0"]
   } 
   # Rule 2: Allow HTTP traffic from anywhere on the internet
   ingress {
@@ -72,13 +76,15 @@ module "ec2_instance" {
 
   name = "${var.project_name}-ec2"
 
+  count = terraform.workspace == "aws" ? 1 : 0
+
   ami = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name      = "general-key-pair"
-  subnet_id     = module.vpc.public_subnets[0]
+  subnet_id     = module.vpc[0].public_subnets[0]
 
   # Attach web security group to ssh into web_server
-  vpc_security_group_ids = [aws_security_group.my_sg.id]
+  vpc_security_group_ids = [aws_security_group.my_sg[0].id]
 
   # Attaching user_data with EC2 -- my script acts as configuration management
   # Converting into tpl file, so we can pass env while calling the file
