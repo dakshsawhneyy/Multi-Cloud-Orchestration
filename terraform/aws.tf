@@ -68,6 +68,7 @@ resource "aws_security_group" "my_sg" {
   tags = local.common_tags
 }
 
+
 # =============================================================================
 # EC2 CONFIGURATION
 # =============================================================================
@@ -87,8 +88,8 @@ module "ec2_instance" {
   vpc_security_group_ids = [aws_security_group.my_sg[0].id]
 
   # Attaching user_data with EC2 -- my script acts as configuration management
-  # Converting into tpl file, so we can pass env while calling the file
-  user_data = templatefile("${path.module}/user-data.sh", {})
+  # user_data = templatefile("${path.module}/user-data.sh", {})
+  user_data = null    # Introducing Ansible 
 
   tags = local.common_tags
 }
