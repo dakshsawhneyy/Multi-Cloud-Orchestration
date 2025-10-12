@@ -129,5 +129,5 @@ resource "azurerm_linux_virtual_machine" "main" {
     version   = "latest"
   }
 
-  custom_data = base64encode(file("${path.module}/user-data.sh"))
+  # custom_data = base64encode(file("${path.module}/user-data.sh"))
 }
