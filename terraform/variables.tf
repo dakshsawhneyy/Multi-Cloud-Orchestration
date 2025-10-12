@@ -38,3 +38,8 @@ variable "azure_location" {
   type = string
   default = "Central India"
 }
+
+variable "aws_instance_count" {
+  type = number
+  default = 3
+}

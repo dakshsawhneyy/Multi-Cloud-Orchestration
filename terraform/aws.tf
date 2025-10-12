@@ -75,9 +75,9 @@ resource "aws_security_group" "my_sg" {
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
 
-  name = "${var.project_name}-ec2"
+  name = "${var.project_name}-ec2-${count.index+1}"     # count.index is internal value to count index starting from 0
 
-  count = terraform.workspace == "aws" ? 1 : 0
+  count = terraform.workspace == "aws" ? var.aws_instance_count : 0
 
   ami = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"

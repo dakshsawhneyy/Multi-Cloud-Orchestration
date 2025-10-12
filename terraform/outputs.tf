@@ -17,3 +17,7 @@ output "azure_vm_public_ip" {
   description = "The public IP address of the Azure VM"
   value       = terraform.workspace == "azure" ? azurerm_public_ip.main[0].ip_address : "N/A (Not in azure workspace)"
 }
+
+output "local_file_name" {
+  value = local_file.ansible_inventory.filename
+}
