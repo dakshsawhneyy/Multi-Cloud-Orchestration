@@ -5,7 +5,7 @@ This repository contains a fully automated, production-grade pipeline that provi
 ---
 ## Architecture
 
-*Replace this line with an embedded image of your final, polished multi-cloud architecture diagram. You can do this by uploading the image to your repository and using the Markdown syntax: `![Architecture Diagram](path/to/your/image.png)`*
+<img width="1393" height="864" alt="diagram-export-10-13-2025-5_47_19-PM" src="https://github.com/user-attachments/assets/ddd4cee1-e0ed-43c0-afa2-f93e8df91924" />
 
 The architecture is designed for consistency, scalability, and resilience. The core workflow begins with a push to the Git repository, which triggers a GitHub Actions pipeline. This pipeline leverages Terraform for infrastructure provisioning and Ansible for configuration, with all state managed centrally and securely in an AWS S3 backend.
 
