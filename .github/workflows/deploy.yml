@@ -30,10 +30,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      # - name: Login to Azure
-      #   uses: azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.AZURE_CREDENTIALS }} # Note: azure/login can accept a JSON object of the 4 creds
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }} # Note: azure/login can accept a JSON object of the 4 creds
 
       - name: Terraform Init
         id: init
