@@ -6,3 +6,4 @@ crash.log
 *.tfplan
 .env
 .terraform.lock.hcl
+id_rsa

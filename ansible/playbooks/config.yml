@@ -91,7 +91,7 @@
       args:
         creates: /etc/datadog-agent/datadog.yaml
       when: datadog_api_key is defined
-      notify: restart datadog-agent
+      notify: restart datadog
 
     - name: Configure Datadog nginx monitoring
       copy:
