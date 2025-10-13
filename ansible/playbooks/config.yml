@@ -17,7 +17,7 @@
     
     - name: Create Web Directory
       file:
-        path: /var/www/p20
+        path: /var/www/daksh
         state: directory
         mode: '0755'
 
@@ -25,7 +25,7 @@
       template:
         # .j2 means it can dynamically inject variables like {{ cloud_provider }} or instance metadata.
         src: ../templates/index.html.j2
-        dest: /var/www/p20/index.html
+        dest: /var/www/daksh/index.html
         mode: '0644'
 
     - name: Configure Nginx
@@ -37,7 +37,7 @@
             # server_name _; means “catch-all” — any domain points here. Any hostname
             server_name _;     
 
-            root /var/www/p20;
+            root /var/www/daksh;
             index index.html;
 
             # Handles all normal HTTP requests. Serve static files OR 404.   # try_files tries to find the file or directory for the given URI.
@@ -68,9 +68,50 @@
         state: started
         enabled: yes
 
+    - name: Remove existing Datadog agent if present
+      package:
+        name: datadog-agent
+        state: absent
+      ignore_errors: yes
+      when: datadog_api_key is defined
+
+    - name: Clean Datadog configuration
+      file:
+        path: /etc/datadog-agent
+        state: absent
+      when: datadog_api_key is defined
+
+    - name: Install Datadog Agent
+      shell: |
+        DD_API_KEY="{{ datadog_api_key }}" \
+        DD_SITE="datadoghq.eu" \
+        DD_HOSTNAME="{{ cloud_provider | lower }}-multi-cloud-orchestration" \
+        DD_TAGS="cloud:{{ cloud_provider | lower }},provider:{{ cloud_provider | lower }},env:dev,project:multi-cloud-orchestration,service:web" \
+        bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+      args:
+        creates: /etc/datadog-agent/datadog.yaml
+      when: datadog_api_key is defined
+      notify: restart datadog-agent
+
+    - name: Configure Datadog nginx monitoring
+      copy:
+        content: |
+          init_config:
+          instances:
+            - nginx_status_url: http://localhost/nginx_status
+        dest: /etc/datadog-agent/conf.d/nginx.d/conf.yaml
+        owner: dd-agent
+        group: dd-agent
+      when: datadog_api_key is defined
+      notify: restart datadog
+
   handlers:
   # Runs only when notify: is triggered.
   - name: restart nginx
     systemd:
       name: nginx
+      state: restarted
+  - name: restart datadog
+    systemd:
+      name: datadog-agent
       state: restarted
