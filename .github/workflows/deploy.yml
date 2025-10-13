@@ -54,7 +54,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "{{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "Secret Key: {{ secrets.SSH_PRIVATE_KEY }}""
+          echo "Secret Key: {{ secrets.SSH_PRIVATE_KEY }}"
           
           echo "SSH FILE: "
           cat ~/.ssh/id_rsa
