@@ -35,11 +35,11 @@
       # if any change is detected, Ansible triggers a handler to restart NginX automatically
       notify: restart nginx
 
-    - name: Ensure nginx is started
-      systemd:
-        name: nginx
-        state: started
-        enabled: yes
+    # - name: Ensure nginx is started
+    #   systemd:
+    #     name: nginx
+    #     state: started
+    #     enabled: yes
 
     # - name: Remove existing Datadog agent if present
     #   package:
