@@ -114,7 +114,7 @@ resource "azurerm_linux_virtual_machine" "main" {
 
   admin_ssh_key {
     username   = "ubuntu"
-    public_key = file("~/.ssh/id_rsa.pub") # Assumes you have an SSH key here
+    public_key = file("${path.module}/id_rsa.pub") # Assumes you have an SSH key here
   }
 
   os_disk {

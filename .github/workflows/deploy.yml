@@ -16,10 +16,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./terraform # Set default directory for terraform commands
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,19 +38,24 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        working-directory: ./terraform
 
       - name: Select Terraform Workspace
         id: workspace
         run: terraform workspace select ${{ github.event.inputs.workspace }}
+        working-directory: ./terraform
 
       - name: Terraform Apply
         id: apply
         run: terraform apply --auto-approve
+        working-directory: ./terraform
 
       - name: Setup Ansible
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
+          mkdir -p ~/.ssh
+          echo "{{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          sudo apt-get update && sudo apt-get install -y ansible
         working-directory: . # Run this from the root
 
       - name: Run Ansible Playbook
