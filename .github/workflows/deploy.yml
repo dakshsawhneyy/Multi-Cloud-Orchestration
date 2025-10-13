@@ -52,17 +52,10 @@ jobs:
 
       - name: Setup Ansible
         run: |
-          mkdir -p ~/.ssh
-          echo "{{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "Secret Key: {{ secrets.SSH_PRIVATE_KEY }}"
-          
-          echo "SSH FILE: "
-          cat ~/.ssh/id_rsa
-
-          echo "Public Key: "
-          cat terraform/id_rsa.pub
-
-          chmod 600 ~/.ssh/id_rsa
+          # Start the ssh-agent in the background
+          eval $(ssh-agent -s)
+          # Add the SSH private key from the secret to the agent.
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
           sudo apt-get update && sudo apt-get install -y ansible
         working-directory: . # Run this from the root
 
