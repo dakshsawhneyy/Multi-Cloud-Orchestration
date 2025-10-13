@@ -16,6 +16,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./terraform # Set default directory for terraform commands
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
