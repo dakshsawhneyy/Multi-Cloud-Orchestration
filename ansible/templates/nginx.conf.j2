@@ -1,0 +1,27 @@
+server {
+    listen 80 default_server;
+
+    # server_name _; means “catch-all” — any domain points here. Any hostname
+    server_name _;     
+
+    root /var/www/daksh;
+    index index.html;
+
+    # Handles all normal HTTP requests. Serve static files OR 404.   # try_files tries to find the file or directory for the given URI.
+    location / {
+        try_files $uri $uri/ =404
+    }
+
+    location /health {
+        default_type application/json
+        return 200 '{"status":"healthy","provider":"{{ cloud_provider }}"}';
+    }
+
+    # Exposes lightweight stats endpoint for monitoring agents.
+    location /nginx_status {
+        stub_status on;
+        access_log off;
+        allow 127.0.0.1;
+        deny all;
+    }
+}

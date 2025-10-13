@@ -30,35 +30,9 @@
 
     - name: Configure Nginx
       copy: 
-        content: |
-          server {
-            listen 80 default_server;
-            
-            # server_name _; means “catch-all” — any domain points here. Any hostname
-            server_name _;     
-
-            root /var/www/daksh;
-            index index.html;
-
-            # Handles all normal HTTP requests. Serve static files OR 404.   # try_files tries to find the file or directory for the given URI.
-            location / {
-              try_files $uri $uri/ =404
-            }
-
-            location /health {
-              default_type application/json
-              return 200 '{"status":"healthy","provider":"{{ cloud_provider }}"}';
-            }
-
-            # Exposes lightweight stats endpoint for monitoring agents.
-            location /nginx_status {
-              stub_status on;
-              access_log off;
-              allow 127.0.0.1;
-              deny all;
-            }
-          }
-        dest: /etc/nginx/conf.d/default.conf
+        template:
+          src: ../templates/nginx.conf.j2
+          dest: /etc/nginx/conf.d/default.conf
       # if any change is detected, Ansible triggers a handler to restart NginX automatically
       notify: restart nginx
 
@@ -68,18 +42,18 @@
         state: started
         enabled: yes
 
-    - name: Remove existing Datadog agent if present
-      package:
-        name: datadog-agent
-        state: absent
-      ignore_errors: yes
-      when: datadog_api_key is defined
+    # - name: Remove existing Datadog agent if present
+    #   package:
+    #     name: datadog-agent
+    #     state: absent
+    #   ignore_errors: yes
+    #   when: datadog_api_key is defined
 
-    - name: Clean Datadog configuration
-      file:
-        path: /etc/datadog-agent
-        state: absent
-      when: datadog_api_key is defined
+    # - name: Clean Datadog configuration
+    #   file:
+    #     path: /etc/datadog-agent
+    #     state: absent
+    #   when: datadog_api_key is defined
 
     - name: Install Datadog Agent
       shell: |
@@ -91,7 +65,7 @@
       args:
         creates: /etc/datadog-agent/datadog.yaml
       when: datadog_api_key is defined
-      notify: restart datadog
+      notify: restart datadog-agent
 
     - name: Configure Datadog nginx monitoring
       copy:
@@ -103,7 +77,7 @@
         owner: dd-agent
         group: dd-agent
       when: datadog_api_key is defined
-      notify: restart datadog
+      notify: restart datadog-agent
 
   handlers:
   # Runs only when notify: is triggered.
@@ -111,7 +85,7 @@
     systemd:
       name: nginx
       state: restarted
-  - name: restart datadog
+  - name: restart datadog-agent
     systemd:
       name: datadog-agent
       state: restarted
