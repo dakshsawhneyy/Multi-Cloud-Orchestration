@@ -1,0 +1,59 @@
+name: Deploy Multi-Cloud Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      # We will provide input, on what workspace we wanted to deploy
+      workspace:
+        description: 'Terraform workspace to deploy (aws or azure)'
+        required: true
+        type: choice
+        options:
+          - aws
+          - azure
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      # - name: Login to Azure
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }} # Note: azure/login can accept a JSON object of the 4 creds
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Select Terraform Workspace
+        id: workspace
+        run: terraform workspace select ${{ github.event.inputs.workspace }}
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
+
+      - name: Setup Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+        working-directory: . # Run this from the root
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i inventory.ini playbooks/config.yml --extra-vars "datadog_api_key=${{ secrets.DATADOG_API_KEY }}"
+        working-directory: ./ansible
