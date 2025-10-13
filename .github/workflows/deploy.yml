@@ -56,6 +56,11 @@ jobs:
           eval $(ssh-agent -s)
           # Add the SSH private key from the secret to the agent
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+
+          # NEW DEBUGGING STEP ---
+          echo "Fingerprint of the key loaded into the agent:"
+          ssh-add -l
+
           sudo apt-get update && sudo apt-get install -y ansible
         working-directory: . # Run this from the root
 
