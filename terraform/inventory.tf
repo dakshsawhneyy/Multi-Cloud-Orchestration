@@ -1,9 +1,9 @@
 /* 
-    Basically the approach is something like we using inventory.tftpl to fetch dynamic ips of the instances created
-    tftpl stands for terraform template
-    we using inventory.tf so it can inject these dynamic values into tftpl file and saving inventory.ini inside ansible folder
+  Basically the approach is something like we using inventory.tftpl to fetch dynamic ips of the instances created
+  tftpl stands for terraform template
+  we using inventory.tf so it can inject these dynamic values into tftpl file and saving inventory.ini inside ansible folder
 
-    It's job is to create inventory file dynamically
+  It's job is to create inventory file dynamically
 */
 
 resource "local_file" "ansible_inventory" {
