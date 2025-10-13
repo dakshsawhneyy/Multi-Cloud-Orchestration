@@ -72,6 +72,15 @@ resource "aws_security_group" "my_sg" {
 # =============================================================================
 # EC2 CONFIGURATION
 # =============================================================================
+
+# Key Pair Creation
+resource "aws_key_pair" "main" {
+  count = terraform.workspace == "aws" ? 1 : 0
+  key_name = "${var.project_name}-key"
+  public_key = file("${path.module}/id_rsa.pub")
+}
+
+# EC2 Creation
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
 
@@ -81,7 +90,7 @@ module "ec2_instance" {
 
   ami = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name      = "general-key-pair"
+  key_name      = aws_key_pair.main[0].key_name
   subnet_id     = module.vpc[0].public_subnets[0]
 
   # Attach web security group to ssh into web_server
