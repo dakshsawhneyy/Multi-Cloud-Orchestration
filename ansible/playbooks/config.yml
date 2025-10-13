@@ -29,10 +29,9 @@
         mode: '0644'
 
     - name: Configure Nginx
-      copy: 
-        template:
-          src: ../templates/nginx.conf.j2
-          dest: /etc/nginx/conf.d/default.conf
+      template:
+        src: ../templates/nginx.conf.j2
+        dest: /etc/nginx/conf.d/default.conf
       # if any change is detected, Ansible triggers a handler to restart NginX automatically
       notify: restart nginx
 
