@@ -57,7 +57,7 @@
     - name: Install Datadog Agent
       shell: |
         DD_API_KEY="{{ datadog_api_key }}" \
-        DD_SITE="datadoghq.eu" \
+        DD_SITE="ap1.datadoghq.com" \
         DD_HOSTNAME="{{ cloud_provider | lower }}-multi-cloud-orchestration" \
         DD_TAGS="cloud:{{ cloud_provider | lower }},provider:{{ cloud_provider | lower }},env:dev,project:multi-cloud-orchestration,service:web" \
         bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
