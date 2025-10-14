@@ -1,16 +1,12 @@
 [webservers]
 
-%{ if workspace == "aws" ~}
 %{ for index, ip in aws_ips ~}
 aws_server_${index+1} ansible_host=${ip} cloud_provider="AWS"
 %{ endfor ~}
-%{ endif ~}
 
-%{ if workspace == "azure" ~}
 %{ for index, ip in azure_ips ~}
 azure_server ansible_host=${ip} cloud_provider="Azure"
 %{ endfor ~}
-%{ endif ~}
 
 [all:vars]
 ansible_user=ubuntu
