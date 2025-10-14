@@ -9,7 +9,7 @@ server {
 
     # Handles all normal HTTP requests. Serve static files OR 404.   # try_files tries to find the file or directory for the given URI.
     location / {
-        try_files $uri $uri/ =404
+        try_files $uri $uri/ =404;
     }
 
     location /health {
