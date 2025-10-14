@@ -70,6 +70,7 @@ resource "azurerm_public_ip" "main" {
   resource_group_name = azurerm_resource_group.main[0].name
   location            = azurerm_resource_group.main[0].location
   allocation_method   = "Static"
+  sku = "Standard"
 }
 
 # Network Interface (NIC)   -- connects subnet with your vm
