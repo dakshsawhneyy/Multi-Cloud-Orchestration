@@ -13,7 +13,7 @@ server {
     }
 
     location /health {
-        default_type application/json
+        default_type application/json;
         return 200 '{"status":"healthy","provider":"{{ cloud_provider }}"}';
     }
 
