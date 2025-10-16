@@ -28,6 +28,12 @@
         dest: /var/www/daksh/index.html
         mode: '0644'
 
+    - name: Remove the default Nginx configuration file
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+
     - name: Configure Nginx
       template:
         src: ../templates/nginx.conf.j2
