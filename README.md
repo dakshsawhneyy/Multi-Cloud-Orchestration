@@ -13,10 +13,18 @@ The architecture is designed for consistency, scalability, and resilience. The c
 ## Key Features
 
 * **Unified Multi-Cloud Provisioning:** A single Terraform codebase with workspaces to selectively deploy and manage infrastructure on AWS and Azure.
+  <img width="1487" height="450" alt="diagram-export-10-14-2025-4_45_17-PM" src="https://github.com/user-attachments/assets/f3f1b188-2ea6-44da-ae8f-c2d82b8a2a68" />
+
 * **Dynamic Inventory Generation:** Terraform automatically generates the Ansible inventory file upon provisioning, creating a seamless link between infrastructure state and configuration management.
 * **Idempotent Configuration:** An Ansible playbook ensures consistent, repeatable, and stateful configuration of the Nginx web server and Datadog monitoring agents.
+<img width="1364" height="640" alt="Screenshot 2025-10-16 142012" src="https://github.com/user-attachments/assets/0743fcc0-21da-44fd-99b7-8c1d60980e36" />
+
 * **Automated CI/CD Pipeline:** A GitHub Actions workflow orchestrates the entire deployment process, from provisioning infrastructure to running configuration playbooks, triggered automatically or manually.
+<img width="1403" height="952" alt="Screenshot 2025-10-16 152642" src="https://github.com/user-attachments/assets/41e72e5e-0992-4d7a-a94d-8bffa35fe31c" />
+
 * **Centralized Observability:** Datadog agents are installed and configured via Ansible, providing a single pane of glass for monitoring system and application metrics from both cloud environments.
+<img width="1309" height="750" alt="diagram-export-10-14-2025-4_25_56-PM" src="https://github.com/user-attachments/assets/0a02037b-4ce1-4074-834a-6098a5515592" />
+
 * **Secure Credential Management:** All sensitive credentials (cloud provider keys, API keys, SSH keys) are managed securely using GitHub Secrets.
 
 ---
